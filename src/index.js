@@ -9,9 +9,9 @@ const cors = require("cors");
 
 app.use(cors({ origins: "*" }));
 app.use(express.json());
-app.use("/", routes);
 
-connectDB();
+void connectDB();
+app.use("/", routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost: ${PORT}`);
