@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { CollectionNames } = require("../../utils/constants");
-const userScheme = new Scheme(
+const userScheme = new Schema(
   {
     name: {
       type: String,
@@ -12,7 +12,7 @@ const userScheme = new Scheme(
       unique: true,
     },
     password: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
     },
