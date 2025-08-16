@@ -5,8 +5,18 @@ const { genSalt, hash } = require("bcryptjs");
 class UserController {
   static signUp = async (req, res) => {
     const { name, email, password } = req.body;
+    const existingUser = await UserModel.findOne({
+      email,
+    });
+    if (existingUser) {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: "user already exists" });
+    }
+
     const salt = await genSalt(10);
     const hashePassword = await hash(password, salt);
+
     await UserModel.create({
       name,
       email,
