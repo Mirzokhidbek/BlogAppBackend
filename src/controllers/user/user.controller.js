@@ -1,6 +1,16 @@
+const { StatusCodes } = require("http-status-codes");
+
 class UserController {
-  static signUp = (req, res) => {
+  static signUp = async (req, res) => {
     const { name, email, password } = req.body;
-    res.status(201).json({ message: "User registered successfully!" });
+    await UserModel.create({
+      name,
+      email,
+      password,
+    });
+    res
+      .status(StatusCodes.CREATED)
+      .json({ message: "User registered successfully!" });
   };
 }
+module.exports = UserController;
