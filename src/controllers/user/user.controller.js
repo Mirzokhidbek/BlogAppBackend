@@ -28,6 +28,7 @@ class UserController {
       .json({ message: "User registered successfully!" });
   };
   static login = async (req, res) => {
+    const { email, password } = req.body;
     const user = await UserModel.findOne({ email });
 
     if (!user) {
@@ -47,6 +48,7 @@ class UserController {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
+    res.status(StatusCodes.OK.json({ token }));
   };
 }
 module.exports = UserController;
