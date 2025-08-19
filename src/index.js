@@ -11,7 +11,15 @@ app.use(cors({ origins: "*" }));
 app.use(express.json());
 
 void connectDB();
-app.use("/", routes);
+app.use(
+  "/",
+  (req, res, next) => {
+    console.log(`Request URL: ${req.url}`);
+
+    next();
+  },
+  routes
+);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost: ${PORT}`);
