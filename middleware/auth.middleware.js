@@ -3,7 +3,9 @@ const {
   ReasonPhrases,
   UNAUTHORIZED,
 } = require("http-status-codes");
+const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../src/utils/secrets");
+const UserModel = require("../src/models/user/user.model");
 
 const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -20,7 +22,7 @@ const authMiddleware = async (req, res, next) => {
       .status(StatusCodes.UNAUTHORIZED)
       .json({ message: ReasonPhrases.UNAUTHORIZED });
   }
-  const decoded = JWT_SECRET.verify(token, JWT_SECRET);
+  const decoded = jwt.verify(token, JWT_SECRET);
   if (!decoded) {
     return res
       .status(StatusCodes.UNAUTHORIZED)

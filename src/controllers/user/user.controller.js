@@ -56,31 +56,31 @@ class UserController {
   };
 
   static getUserProfile = async (req, res) => {
-    // const { authorization } = req.headers;
+    const { authorization } = req.headers;
 
-    // if (!authorization) {
-    //   return res
-    //     .status(StatusCodes.UNAUTHORIZED)
-    //     .json({ message: "No token provided" });
-    // }
+    if (!authorization) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: "No token provided" });
+    }
 
-    // const token = authorization.split("")[1];
-    // try {
-    //   const decoded = jwt.verify(token, JWT_SECRET);
-    //   const userId = decoded.id;
-    //   const user = await UserModel.findById(userId).secret("-password");
-    //   if (!user) {
-    //     return res
-    //       .status(StatusCodes.NOT_FOUND)
-    //       .json({ message: "User not found" });
-    //   }
-    //   res.status(StatusCodes.Ok).json({ user });
-    // } catch (error) {
-    //   return res
-    //     .status(StatusCodes.UNAUTHORIZED)
-    //     .json({ message: "Invalid token" });
-    // }
-    console.log(req.user);
+    const token = authorization.split(" ")[1]; // Fix: split by space!
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.id;
+      // Make sure to exclude the password from the results:
+      const user = await UserModel.findById(userId).select("-password");
+      if (!user) {
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: "User not found" });
+      }
+      res.status(StatusCodes.OK).json({ user });
+    } catch (error) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ message: "Invalid token" });
+    }
   };
 }
 
