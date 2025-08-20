@@ -10,9 +10,7 @@ class UserController {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ message: "User already exists" });
+      throw new Error("User already exists");
     }
 
     const salt = await genSalt(10);

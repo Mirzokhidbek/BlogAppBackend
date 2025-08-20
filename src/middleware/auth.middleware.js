@@ -1,42 +1,55 @@
-const {
-  StatusCodes,
-  ReasonPhrases,
-  UNAUTHORIZED,
-} = require("http-status-codes");
+const { StatusCodes, ReasonPhrases } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/secrets");
 const UserModel = require("../models/user/user.model");
+const HttpException = require("../utils/httpException"); // adjust path if needed
 
 const authMiddleware = async (req, res, next) => {
-  const { authorization } = req.headers;
+  try {
+    const { authorization } = req.headers;
 
-  if (!authorization) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: ReasonPhrases });
-  }
-  const token = authorization.split(" ")[1];
+    if (!authorization) {
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        ReasonPhrases.UNAUTHORIZED
+      );
+    }
 
-  if (!token) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: ReasonPhrases.UNAUTHORIZED });
-  }
-  const decoded = jwt.verify(token, JWT_SECRET);
-  if (!decoded) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: ReasonPhrases.UNAUTHORIZED });
-  }
-  const user = await UserModel.findById(decoded.id).select("-password");
+    const parts = authorization.split(" ");
+    const token = parts.length === 2 ? parts[1] : null;
 
-  if (!user) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: "User not found or unauthorized" });
+    if (!token) {
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        ReasonPhrases.UNAUTHORIZED
+      );
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (e) {
+      // invalid or expired token
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        ReasonPhrases.UNAUTHORIZED
+      );
+    }
+
+    const user = await UserModel.findById(decoded.id).select("-password");
+
+    if (!user) {
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        "User not found or unauthorized"
+      );
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    next(err); // forward to your error handler that uses statusCode/message
   }
-  req.user = user;
-  next();
 };
 
 module.exports = authMiddleware;

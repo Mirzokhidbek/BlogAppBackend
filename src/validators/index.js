@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
-const { StatusCodes } = require("http-status-codes");
+const { StatusCodes, getStatusCode } = require("http-status-codes");
+const HttpException = require("../utils/httpException");
 const validationRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -9,8 +10,6 @@ const validationRequest = (req, res, next) => {
   errors.array().map((err) => {
     messages += err.msg + "! ";
   });
-  return res
-    .status(StatusCodes.UNPROCESSABLE_ENTITY)
-    .json({ errors: messages.trim() });
+  throw new HttpException(StatusCodes.UNPROCESSABLE_ENTITY, messages.trim());
 };
 module.exports = { validationRequest };
