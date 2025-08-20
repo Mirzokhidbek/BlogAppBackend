@@ -4,8 +4,8 @@ const {
   UNAUTHORIZED,
 } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../src/utils/secrets");
-const UserModel = require("../src/models/user/user.model");
+const { JWT_SECRET } = require("../utils/secrets");
+const UserModel = require("../models/user/user.model");
 
 const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
