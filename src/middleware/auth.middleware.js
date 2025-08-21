@@ -18,6 +18,13 @@ const authMiddleware = async (req, res, next) => {
     const parts = authorization.split(" ");
     const token = parts.length === 2 ? parts[1] : null;
 
+    if (!token) {
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        ReasonPhrases.UNAUTHORIZED
+      );
+    }
+
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
