@@ -8,13 +8,6 @@ const authMiddleware = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
 
-    if (!authorization) {
-      throw new HttpException(
-        StatusCodes.UNAUTHORIZED,
-        ReasonPhrases.UNAUTHORIZED
-      );
-    }
-
     const parts = authorization.split(" ");
     const token = parts.length === 2 ? parts[1] : null;
 
