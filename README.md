@@ -113,6 +113,8 @@ The token expires after 1 hour.
 }
 ```
 
+`title` and `content` are required. The blog's author is set from the logged-in user.
+
 ### Authentication
 
 Protected routes need the JWT in the `Authorization` header:
@@ -138,7 +140,7 @@ Errors are returned in this format:
 
 **User**: `name`, `email` (unique), `password` (hashed), `role` (`user` | `admin`, default `user`), `status` (`active` | `inactive`, default `active`), timestamps.
 
-**Blog**: `title`, `content`, `status` (`published` | `draft` | `archived`, default `published`), timestamps.
+**Blog**: `title`, `content`, `author` (the user who created it), `status` (`published` | `draft` | `archived`, default `published`), timestamps.
 
 ## Project structure
 

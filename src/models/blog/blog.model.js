@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, Types } = require("mongoose");
 const { CollectionNames } = require("../../utils/constants");
 const BlogScheme = new Schema(
   {
@@ -8,6 +8,11 @@ const BlogScheme = new Schema(
     },
     content: {
       type: String,
+      required: true,
+    },
+    author: {
+      type: Types.ObjectId,
+      ref: CollectionNames.USERS,
       required: true,
     },
 

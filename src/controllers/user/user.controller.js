@@ -3,6 +3,7 @@ const UserModel = require("../../models/user/user.model");
 const { genSalt, hash, compare } = require("bcryptjs"); // ✅ compare qo‘shildi
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../../utils/secrets");
+const HttpException = require("../../utils/httpException");
 
 class UserController {
   static signUp = async (req, res) => {
@@ -10,7 +11,7 @@ class UserController {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      throw new Error("User already exists");
+      throw new HttpException(StatusCodes.CONFLICT, "User already exists");
     }
 
     const salt = await genSalt(10);
@@ -54,31 +55,7 @@ class UserController {
   };
 
   static getUserProfile = async (req, res) => {
-    const { authorization } = req.headers;
-
-    if (!authorization) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: "No token provided" });
-    }
-
-    const token = authorization.split(" ")[1]; // Fix: split by space!
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const userId = decoded.id;
-      // Make sure to exclude the password from the results:
-      const user = await UserModel.findById(userId).select("-password");
-      if (!user) {
-        return res
-          .status(StatusCodes.NOT_FOUND)
-          .json({ message: "User not found" });
-      }
-      res.status(StatusCodes.OK).json({ user });
-    } catch (error) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: "Invalid token" });
-    }
+    res.status(StatusCodes.OK).json({ user: req.user });
   };
 }
 
