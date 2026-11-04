@@ -16,7 +16,7 @@ user_router.post(
   "/login",
   UserValidator.login(),
   validationRequest,
-  UserValidator.login
+  UserController.login
 );
 user_router.get("/me", authMiddleware, UserController.getUserProfile);
 
